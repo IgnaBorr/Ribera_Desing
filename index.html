@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ribera Visual Engine · V2</title>
+  <meta name="description" content="Mesa de revelado visual para fotos: presets digitales y analógicos, Supabase, proyectos, presets cloud y exportación." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand-block">
+        <div class="brand-mark">RVE</div>
+        <div>
+          <p class="eyebrow">La Ribera · Visual Lab</p>
+          <h1>Ribera Visual Engine</h1>
+        </div>
+      </div>
+      <div class="topbar-cloud" id="cloudStatusBox">
+        <span class="dot" id="cloudDot"></span>
+        <div>
+          <p class="eyebrow">Supabase</p>
+          <strong id="cloudStatusText">Modo local</strong>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button id="btnAuth" class="ghost-btn" type="button">Ingresar</button>
+        <button id="btnLogout" class="ghost-btn hidden" type="button">Salir</button>
+        <button id="btnReset" class="ghost-btn" type="button">Reset</button>
+        <button id="btnSaveProject" class="secondary-btn" type="button" disabled>Guardar proyecto</button>
+        <button id="btnSaveExport" class="primary-btn" type="button" disabled>Guardar versión</button>
+        <button id="btnDownload" class="primary-btn strong" type="button" disabled>Exportar PNG</button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <aside class="panel left-panel">
+        <section class="panel-section upload-card" id="uploadCard">
+          <div class="upload-icon">▧</div>
+          <h2>Cargar imagen</h2>
+          <p>Arrastrá una foto o seleccioná un archivo. V2 trabaja foto a nivel profesional y deja video como roadmap controlado.</p>
+          <input id="fileInput" type="file" accept="image/png,image/jpeg,image/webp" hidden />
+          <button id="btnPickFile" class="primary-btn full" type="button">Seleccionar imagen</button>
+          <p id="fileMeta" class="small-muted">Sin archivo cargado</p>
+        </section>
+
+        <section class="panel-section">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Presets</p>
+              <h2>Biblioteca visual</h2>
+            </div>
+            <select id="presetCategory" class="compact-select" aria-label="Filtrar presets por categoría">
+              <option value="all">Todos</option>
+            </select>
+          </div>
+          <div id="presetGrid" class="preset-grid"></div>
+        </section>
+
+        <section class="panel-section preset-builder">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Recetas propias</p>
+              <h2>Crear preset</h2>
+            </div>
+          </div>
+          <label class="field-label" for="presetName">Nombre</label>
+          <input id="presetName" class="text-input" placeholder="Ej: Ribera Cover 02" />
+          <label class="field-label" for="presetDescription">Descripción</label>
+          <textarea id="presetDescription" class="text-area" rows="3" placeholder="Uso, intención estética, campaña..."></textarea>
+          <div class="inline-fields">
+            <div>
+              <label class="field-label" for="presetNewCategory">Categoría</label>
+              <input id="presetNewCategory" class="text-input" placeholder="Ribera" />
+            </div>
+            <div>
+              <label class="field-label" for="presetUsage">Uso</label>
+              <select id="presetUsage" class="text-input">
+                <option value="Foto">Foto</option>
+                <option value="Portada">Portada</option>
+                <option value="Campaña">Campaña</option>
+                <option value="Experimental">Experimental</option>
+              </select>
+            </div>
+          </div>
+          <button id="btnSavePreset" class="secondary-btn full" type="button" disabled>Guardar preset actual</button>
+          <p class="small-muted">Los presets se guardan localmente y, si iniciás sesión, también se sincronizan con Supabase.</p>
+        </section>
+
+        <section class="panel-section cloud-panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Nube</p>
+              <h2>Sincronización</h2>
+            </div>
+          </div>
+          <p id="cloudHint" class="small-muted">Configurá Supabase en <code>config.js</code> para activar cuenta, proyectos, presets y assets.</p>
+          <div class="cloud-actions">
+            <button id="btnSyncPresets" class="ghost-btn full" type="button">Sincronizar presets</button>
+            <button id="btnMigrateLocalPresets" class="ghost-btn full" type="button">Subir presets locales</button>
+            <button id="btnRefreshCloud" class="ghost-btn full" type="button">Actualizar nube</button>
+          </div>
+        </section>
+      </aside>
+
+      <section class="stage-panel">
+        <div class="stage-toolbar">
+          <div>
+            <p class="eyebrow">Mesa de revelado</p>
+            <h2 id="activePresetLabel">Sin preset aplicado</h2>
+          </div>
+          <div class="toolbar-group">
+            <label class="toggle-control">
+              <input id="beforeAfterToggle" type="checkbox" checked />
+              <span>Antes / después</span>
+            </label>
+            <label class="ratio-control" for="exportRatio">Formato export</label>
+            <select id="exportRatio" class="compact-select">
+              <option value="original">Original</option>
+              <option value="1:1">1:1</option>
+              <option value="4:5">4:5</option>
+              <option value="9:16">9:16</option>
+              <option value="16:9">16:9</option>
+              <option value="3:2">3:2</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="preview-wrap" id="dropZone">
+          <div class="empty-state" id="emptyState">
+            <div class="empty-mark">RVE</div>
+            <h2>Subí una imagen para empezar</h2>
+            <p>Aplicá presets, mezclá estética digital y analógica, guardá versiones y exportá piezas listas para uso visual.</p>
+          </div>
+          <div id="canvasStage" class="canvas-stage hidden">
+            <canvas id="processedCanvas"></canvas>
+            <canvas id="originalCanvas" class="original-layer"></canvas>
+            <div id="splitLine" class="split-line"></div>
+          </div>
+          <input id="compareRange" class="compare-range hidden" type="range" min="0" max="100" value="50" aria-label="Comparar antes y después" />
+        </div>
+
+        <div class="version-strip">
+          <div class="version-info">
+            <span class="dot live"></span>
+            <span id="renderStatus">Esperando imagen</span>
+          </div>
+          <div class="mini-actions">
+            <button id="btnCopySettings" class="ghost-btn" type="button" disabled>Copiar receta</button>
+            <button id="btnLoadRecipe" class="ghost-btn" type="button">Importar receta</button>
+          </div>
+        </div>
+
+        <section class="gallery-panel">
+          <div class="section-head gallery-head">
+            <div>
+              <p class="eyebrow">Historial</p>
+              <h2>Versiones guardadas</h2>
+            </div>
+            <div class="mini-actions">
+              <select id="galleryMode" class="compact-select" aria-label="Origen del historial">
+                <option value="local">Local</option>
+                <option value="cloud">Supabase</option>
+              </select>
+              <button id="btnRefreshGallery" class="ghost-btn" type="button">Actualizar</button>
+              <button id="btnClearGallery" class="ghost-btn danger" type="button">Limpiar local</button>
+            </div>
+          </div>
+          <div id="galleryGrid" class="gallery-grid"></div>
+        </section>
+
+        <section class="gallery-panel projects-panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Proyectos cloud</p>
+              <h2>Biblioteca de trabajo</h2>
+            </div>
+          </div>
+          <div id="projectsGrid" class="projects-grid"></div>
+        </section>
+      </section>
+
+      <aside class="panel right-panel">
+        <section class="panel-section">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Controles</p>
+              <h2>Ajuste fino</h2>
+            </div>
+            <button id="btnZeroControls" class="ghost-btn" type="button" disabled>Neutral</button>
+          </div>
+          <div id="controlsContainer" class="controls-container"></div>
+        </section>
+
+        <section class="panel-section stack-section">
+          <p class="eyebrow">Capas de acabado</p>
+          <h2>Look analógico</h2>
+          <div class="check-grid">
+            <label><input id="toggleBorder" type="checkbox" /> Marco film</label>
+            <label><input id="toggleDateStamp" type="checkbox" /> Fecha fake</label>
+            <label><input id="toggleTexture" type="checkbox" checked /> Textura</label>
+            <label><input id="toggleSafeSharpen" type="checkbox" checked /> Nitidez segura</label>
+          </div>
+        </section>
+
+        <section class="panel-section project-panel">
+          <p class="eyebrow">Proyecto</p>
+          <h2>Metadatos</h2>
+          <label class="field-label" for="projectTitle">Título</label>
+          <input id="projectTitle" class="text-input" placeholder="Ej: Portada home · Campaña mayo" />
+          <label class="field-label" for="projectNotes">Notas</label>
+          <textarea id="projectNotes" class="text-area" rows="3" placeholder="Cliente, campaña, intención visual, uso final..."></textarea>
+          <p class="small-muted">En modo cloud se guarda el proyecto, la receta y el archivo fuente en Supabase Storage.</p>
+        </section>
+
+        <section class="panel-section recipe-panel">
+          <p class="eyebrow">Receta activa</p>
+          <pre id="recipeOutput" class="recipe-output">Sin imagen cargada.</pre>
+        </section>
+      </aside>
+    </main>
+  </div>
+
+  <dialog id="authDialog" class="recipe-dialog auth-dialog">
+    <form method="dialog">
+      <h2>Acceso Ribera Visual Engine</h2>
+      <p>Usá Supabase Auth para guardar proyectos, presets y exportaciones en la nube. Si no configurás Supabase, la app funciona local.</p>
+      <label class="field-label" for="authEmail">Email</label>
+      <input id="authEmail" class="text-input" type="email" autocomplete="email" placeholder="ribera@empresa.com" />
+      <label class="field-label" for="authPassword">Contraseña</label>
+      <input id="authPassword" class="text-input" type="password" autocomplete="current-password" placeholder="Mínimo 6 caracteres" />
+      <div class="dialog-actions split-actions">
+        <button class="ghost-btn" value="cancel" type="submit">Cancelar</button>
+        <button id="btnLogin" class="primary-btn" value="default" type="button">Ingresar</button>
+        <button id="btnSignup" class="secondary-btn" value="default" type="button">Crear cuenta</button>
+      </div>
+      <p id="authMessage" class="small-muted"></p>
+    </form>
+  </dialog>
+
+  <dialog id="recipeDialog" class="recipe-dialog">
+    <form method="dialog">
+      <h2>Importar receta</h2>
+      <p>Pegá una receta exportada desde Ribera Visual Engine. Se aplicará sobre la imagen actual.</p>
+      <textarea id="recipeInput" class="text-area recipe-import" rows="10" placeholder='{"name":"Ribera Cover", "settings": {...}}'></textarea>
+      <div class="dialog-actions">
+        <button class="ghost-btn" value="cancel" type="submit">Cancelar</button>
+        <button id="btnApplyRecipe" class="primary-btn" value="default" type="button">Aplicar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
