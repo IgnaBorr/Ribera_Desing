@@ -1,148 +1,136 @@
-# Ribera Visual Engine · V2
+# Ribera Visual Engine · V3
 
-Mesa de revelado visual para La Ribera. Permite cargar imágenes, aplicar presets digitales/analógicos, ajustar parámetros finos, crear presets propios, comparar antes/después, guardar versiones y exportar PNG.
+Mesa de trabajo de celuloide para editar imágenes con estética digital + analógica. La V3 mantiene Supabase de la V2, pero agranda el motor de edición: más color, RGB real, HSL selectivo, revelado químico simulado, overlays físicos y una interfaz de laboratorio visual.
 
-La V2 agrega integración real con Supabase, pero mantiene fallback local. Si `config.js` no tiene credenciales, la app funciona igual con IndexedDB/localStorage.
+## Qué incluye
 
-## Qué incluye la V2
-
-### Editor visual
-
-- Carga de imágenes PNG, JPG y WEBP.
-- Motor Canvas sin IA y sin APIs pagas.
-- Comparación antes/después.
+### Editor de imagen
+- Carga de PNG, JPG y WEBP.
+- Preview con Canvas.
+- Comparador antes/después.
 - Exportación PNG.
-- Formatos:
-  - Original
-  - 1:1
-  - 4:5
-  - 9:16
-  - 16:9
-  - 3:2
-- Sliders:
-  - Exposición
-  - Brillo
-  - Contraste
-  - Saturación
-  - Temperatura
-  - Tinte
-  - Altas luces
-  - Sombras
-  - Matte / Fade
-  - Grano
-  - Polvo
-  - Scratches
-  - Viñeta
-  - Bloom
-  - Halation
-  - Aberración cromática
-  - Soft blur
-  - Sharpness
-- Capas:
-  - Marco film
-  - Fecha fake
-  - Textura
-  - Nitidez segura
+- Formatos: original, 1:1, 4:5, 9:16, 16:9, 3:2, 2:3 y 21:9.
 
 ### Presets incluidos
+- Ribera Cover III
+- Celluloid 400T
+- Dirty Contact Sheet
+- Urban Asphalt
+- Neon Bleed
+- B&W Hard Proof
+- VHS Scanner
+- Clean Grade Pro
 
-- Ribera Cover
-- Analog 35
-- Dirty Film
-- Urban Grit
-- VHS Raw
-- B&N Documentary
-- Neon Decay
-- Editorial Sucio
-- Clean Digital
-- MiniDV
+### Controles nuevos de V3
 
-### V2 Cloud / Supabase
+#### Luz / densidad
+- Exposición
+- Brillo
+- Contraste
+- Gamma
+- Punto negro
+- Punto blanco
 
-- Login y registro con Supabase Auth.
-- Guardado de presets en Supabase.
-- Migración de presets locales a Supabase.
-- Guardado de proyectos:
-  - título
-  - notas
-  - archivo fuente
-  - receta activa
-  - preset activo
-- Guardado de exportaciones en Supabase Storage.
-- Historial local y cloud con selector.
-- Biblioteca de proyectos cloud.
-- URLs firmadas para descargar assets privados.
-- Row Level Security incluida.
-- Storage privado por usuario.
+#### Tonos / curva simulada
+- Altas luces
+- Sombras
+- Blancos
+- Negros
+- Medios tonos
+- Claridad local
+- Dehaze
 
-## Archivos
+#### Color global
+- Saturación
+- Vibrance
+- Temperatura
+- Tinte
+- Rotación de tono
+- Contraste cromático
+- Lavado de color
+- Sepia
+- Monocromo
 
-- `index.html` — estructura de la app.
-- `styles.css` — diseño responsive/mobile-first.
-- `app.js` — motor visual, persistencia local y Supabase.
-- `config.js` — configuración editable de Supabase.
-- `config.example.js` — ejemplo de configuración.
-- `schema.sql` — base de datos, policies y storage.
-- `README.md` — este documento.
+#### RGB técnico
+- Rojo global
+- Verde global
+- Azul global
+- Rojo/verde/azul en sombras
+- Rojo/verde/azul en luces
 
-## Instalación local
+#### Color corrector
+- Cyan ↔ Rojo
+- Magenta ↔ Verde
+- Amarillo ↔ Azul
 
-Podés abrir `index.html` directo, pero para evitar restricciones del navegador conviene usar servidor local:
+#### Mezclador HSL
+- Rojos, naranjas, amarillos, verdes, cyan, azules y magentas
+- Saturación selectiva
+- Luminosidad en rojos/naranjas
 
-```bash
-python -m http.server 8080
-```
+#### Film stock / químico
+- Fade
+- Matte print
+- Bleach bypass
+- Cross process
+- Luces cálidas
+- Sombras frías
+- Mancha química
+- Quemado de bordes
 
-Después abrí:
+#### Textura analógica
+- Grano
+- Tamaño de grano
+- Color de grano
+- Polvo
+- Scratches
+- Fuga de luz
+- Viñeta
+- Bloom
+- Halation
+- Aberración cromática
 
-```text
-http://localhost:8080
-```
+#### Video / scanner damage
+- Scanlines
+- Banding horizontal
+- Gate weave
+- Posterize
+- Threshold / Xerox
 
-## Deploy en GitHub Pages
+#### Detalle / óptica
+- Soft blur
+- Sharpness
 
-1. Creá un repositorio, por ejemplo `ribera-visual-engine`.
-2. Subí todos los archivos de esta carpeta.
-3. En GitHub: Settings → Pages.
-4. Seleccioná rama `main` y carpeta `/root`.
-5. Guardá.
+### Capas físicas
+- Marco film
+- Fecha fake
+- Textura activa
+- Nitidez segura
+- Perforaciones de celuloide
+- Código de rollo
+- Borde químico
+- Scanlines
 
-## Configurar Supabase
+### Presets propios
+- Crear presets desde el estado actual del editor.
+- Guardar presets localmente.
+- Sincronizar presets con Supabase si hay sesión iniciada.
+- Importar/exportar recetas visuales JSON.
 
-### 1. Crear proyecto
+### Supabase
+- Auth con email/contraseña.
+- Guardado de proyectos.
+- Guardado de presets cloud.
+- Guardado de exportaciones.
+- Supabase Storage privado por usuario.
+- Fallback local si no hay configuración cloud.
 
-Creá un proyecto en Supabase.
+## Instalación rápida
 
-### 2. Ejecutar schema
-
-Abrí Supabase → SQL Editor → New query.
-
-Pegá todo el contenido de:
-
-```text
-schema.sql
-```
-
-Ejecutalo completo.
-
-Esto crea:
-
-- `rve_profiles`
-- `rve_presets`
-- `rve_projects`
-- `rve_exports`
-- bucket privado `ribera-visual-engine`
-- policies RLS
-- policies de Storage
-
-### 3. Completar config.js
-
-En Supabase → Project Settings → API copiá:
-
-- Project URL
-- anon public key
-
-Editá `config.js`:
+1. Subí estos archivos a GitHub Pages, Netlify o cualquier hosting estático.
+2. Creá un proyecto en Supabase.
+3. Ejecutá `schema.sql` completo desde el SQL Editor de Supabase.
+4. Completá `config.js` con tus claves públicas:
 
 ```js
 window.RVE_CONFIG = {
@@ -153,40 +141,28 @@ window.RVE_CONFIG = {
 };
 ```
 
-No pongas la service role key en el navegador. Eso sería un agujero de seguridad, no una feature.
+No uses la service role key en el front-end.
 
-### 4. Auth
+## Modo local
 
-En Supabase → Authentication podés decidir si exigís confirmación de email.
+Si `CLOUD_ENABLED` está en `false` o no completás Supabase, la app sigue funcionando con:
 
-Para uso interno rápido, podés desactivar confirmación de email mientras testeás. Para producción, conviene activarla.
+- presets locales en `localStorage`
+- exportaciones en `IndexedDB`
+- descarga directa de PNG
 
-## Flujo de uso
+## Notas técnicas
 
-1. Cargá una foto.
-2. Aplicá un preset.
-3. Ajustá sliders y capas.
-4. Completá título y notas del proyecto.
-5. Iniciá sesión.
-6. Guardá proyecto.
-7. Guardá versión.
-8. Exportá PNG si necesitás el archivo final.
+- La app no usa IA.
+- La edición se procesa con Canvas en navegador.
+- V3 sigue enfocada en imagen. Video debería ir en una V4 con pipeline propio por frames y exportación controlada; meterlo acá sería técnicamente desordenado.
+- En imágenes pesadas, el render se limita por `MAX_RENDER_DIMENSION` para no matar celulares.
 
-## Decisiones técnicas
+## Archivos
 
-- V2 sigue enfocada en imagen. Video no se metió porque requiere pipeline separado, procesamiento por frames y exportación pesada. Si se fuerza ahora, se rompe la experiencia mobile.
-- La app usa Canvas y procesamiento local. No hay IA ni dependencia por créditos.
-- Supabase se usa para persistencia, no para procesar la imagen.
-- Storage es privado. La app genera signed URLs temporales.
-- La app funciona aunque Supabase no esté configurado.
-
-## Roadmap sugerido V3
-
-- Roles admin/editor/viewer con gestión visual.
-- Presets compartidos por equipo.
-- Duplicar proyectos.
-- Versionado por campaña.
-- Tags por cliente/campaña.
-- Exportación batch en varios formatos.
-- Soporte de video corto con pipeline específico.
-- IA asistida sólo como capa secundaria, no como núcleo.
+- `index.html`: interfaz principal.
+- `styles.css`: diseño celuloide/laboratorio.
+- `app.js`: motor visual, presets, Supabase, historial y exportación.
+- `config.js`: credenciales públicas de Supabase.
+- `config.example.js`: plantilla de configuración.
+- `schema.sql`: base de datos, RLS y Storage.
